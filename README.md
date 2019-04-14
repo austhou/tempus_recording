@@ -5,4 +5,4 @@
 3. run waitrecord.py and record stuff
 4. play the wav files! they get overwritten each time you run the program
 
-# test.py, audiodevices.py, and trim.py are test functions, ignore them
+test.py, audiodevices.py, and trim.py are test functions, ignore them
