@@ -10,25 +10,27 @@ import pyaudio
 
 
 CHUNK_SIZE = 1024
+
+# minimum volume to start recording. 3000 is arbitrary
 MIN_VOLUME = 3000
 # if the recording thread can't consume fast enough, the listener will start discarding
 BUF_MAX_SIZE = CHUNK_SIZE * 10
 
-#frame buffer for audio data
+# frame buffer for audio data
 frames = []
-#counter to keep track of silence length
+# counter to keep track of silence length
 silencecounter = 0
-#threshold for when to stop recording 
+# threshold for when to stop recording 
 silencethreshold = 100
-#counter to keep track of the session number to save
+# counter to keep track of the session number to save
 counter = 0
-#indicator to show when stuff is recording 
+# indicator to show when stuff is recording 
 record = 0
 
-#filename header
+# filename header
 wav_output_filename = 'test'
 
-#start audio stream
+# start audio stream
 audio = pyaudio.PyAudio()
 stream = audio.open(
     format=pyaudio.paInt16,
@@ -38,7 +40,7 @@ stream = audio.open(
     frames_per_buffer=1024,
 )
 
-#main() method starts threads
+# main() method starts threads
 def main():
     stopped = threading.Event()
     q = Queue(maxsize=int(round(BUF_MAX_SIZE / CHUNK_SIZE)))
@@ -59,7 +61,7 @@ def main():
     record_t.join()
 
 
-#record method takes an audio chunk from the listen thread and processes it
+# record method takes an audio chunk from the listen thread and processes it
 def record(stopped, q):
     global silencecounter
     global silencethreshold
@@ -89,7 +91,7 @@ def record(stopped, q):
             if silencecounter > silencethreshold and record == 1:
                 print("saving")
                 form_1 = pyaudio.paInt16
-                #variables. TODO move these variables to the top
+                # variables. TODO move these variables to the top
                 chans=1
                 samp_rate = 44100
                 chunk = 1024
@@ -101,13 +103,13 @@ def record(stopped, q):
                 wavefile.setframerate(samp_rate)
                 wavefile.writeframes(b''.join(frames))
                 wavefile.close()
-                #reset indicators
+                # reset indicators
                 record = 0
                 counter += 1
                 frames = []
 
 
-#listen stream. doesn't do anything except write sound to buffer
+# listen stream. doesn't do anything except write sound to buffer
 def listen(stopped, q):
     global stream
 
@@ -119,6 +121,6 @@ def listen(stopped, q):
         except Full:
             pass  # discard
 
-#start main stuff
+# start main stuff
 if __name__ == '__main__':
     main()
